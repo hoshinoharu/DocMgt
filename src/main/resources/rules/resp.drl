@@ -1,0 +1,31 @@
+package rules;
+dialect  "mvel"
+import com.rehoshi.docmgt.domain.RespData
+
+rule "success"
+    no-loop true
+    when $resp : RespData(code == 200)
+    then $resp.setMsg("操作成功");
+end
+
+
+rule "server_error"
+    no-loop true
+    when $resp : RespData(code == 500)
+    then $resp.setMsg("服务器错误");
+end
+
+rule "change-success"
+    no-loop true
+    when $resp : RespData(success == true)
+    then $resp.setCode(200);
+    update($resp)
+end
+
+rule "change-fail"
+    no-loop true
+    when $resp : RespData(success == false)
+    then $resp.setCode(500);
+    update($resp)
+end
+
