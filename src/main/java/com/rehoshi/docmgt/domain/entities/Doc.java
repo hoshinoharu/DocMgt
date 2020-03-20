@@ -1,6 +1,9 @@
 package com.rehoshi.docmgt.domain.entities;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.security.Policy;
+import java.util.Date;
 
 public class Doc {
 
@@ -39,4 +42,16 @@ public class Doc {
      * 文档分类 默认是政策文档
      */
     private String category = Category.POLICY ;
+
+    /**
+     * 创建人
+     */
+    private String creatorId ;
+    @TableField(exist = false)
+    private User creator ;
+
+    /**
+     * 创建时间
+     */
+    private Date createTime;
 }

@@ -4,14 +4,14 @@ import com.rehoshi.docmgt.domain.RespData
 
 rule "success"
     no-loop true
-    when $resp : RespData(code == 200)
+    when $resp : RespData(code == 200 && msg == null)
     then $resp.setMsg("操作成功");
 end
 
 
 rule "server_error"
     no-loop true
-    when $resp : RespData(code == 500)
+    when $resp : RespData(code == 500 && msg == null)
     then $resp.setMsg("服务器错误");
 end
 

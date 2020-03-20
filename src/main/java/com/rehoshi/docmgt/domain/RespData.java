@@ -14,6 +14,7 @@ public class RespData<T> {
     private Boolean success;
     private T data;
     private String msg;
+    private String desc ;
 
     public RespData() {
     }
@@ -50,6 +51,18 @@ public class RespData<T> {
         this.msg = msg;
     }
 
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+    public RespData<T> desc(String desc){
+        setDesc(desc);
+        return this ;
+    }
 
     public RespData<T> code(Integer code) {
         setCode(code);

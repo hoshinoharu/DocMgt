@@ -1,5 +1,7 @@
 package com.rehoshi.docmgt.domain.entities;
 
+import java.util.Date;
+
 public class User {
 
     /**
@@ -33,4 +35,9 @@ public class User {
      * 用户角色
      */
     private String role = Role.USER;
+
+    /**
+     * 创建时间
+     */
+    private Date createTime ;
 }
