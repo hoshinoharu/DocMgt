@@ -5,7 +5,7 @@ import com.rehoshi.docmgt.domain.entities.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 @Repository
-//@Mapper
+@Mapper
 public interface UserDao extends BaseMapper<User> {
 
 
