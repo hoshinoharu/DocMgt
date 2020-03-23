@@ -28,7 +28,7 @@ public class LoginController extends HoshiController {
     @PostMapping("/register")
     public RespData<User> register(User user) {
         return $(resp -> {
-            List<User> users = userService.selectByAccount(user.getAccount());
+            List<User> users = userService.getAccount(user.getAccount());
             if (HStream.count(users) > 0) {
                 resp.success(false).msg("该账号已存在");
             } else {
@@ -54,7 +54,7 @@ public class LoginController extends HoshiController {
     @PostMapping("/login")
     public RespData<String> login(User user) {
         return $(resp -> {
-            List<User> users = userService.selectByAccount(user.getAccount());
+            List<User> users = userService.getAccount(user.getAccount());
             if (HStream.count(users) != 1) {
                 resp.success(false).msg("用户名或者密码错误");
             } else {

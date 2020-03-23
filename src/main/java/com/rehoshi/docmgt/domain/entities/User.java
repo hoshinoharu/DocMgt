@@ -26,6 +26,14 @@ public class User {
      */
     private String account ;
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     /**
      * 用户密码
      */
@@ -40,6 +48,7 @@ public class User {
      * 创建时间
      */
     private Date createTime ;
+    private  String description;
 
     /**
      * 用户登录凭证

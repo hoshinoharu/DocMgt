@@ -8,13 +8,27 @@ import java.util.List;
 
 public interface UserService extends IService<User> {
     /***
-     * 根据用户名查询用户信息
+     * 更新用户信息
+     * @param user
      */
-    List<User> selectByName(String name);
+    void update(User user);
+
+    /***
+     * 根据用户名查询用户所有信息
+     */
+    List<User> getName(String key);
+
+    /**
+     * 根据关键词查询用户名，描述
+     *
+     * @param key
+     * @return
+     */
+    List<User> getKey(String key);
     /***
      * 根据账号查询用户信息
      */
-    List<User> selectByAccount(String account);
+    List<User> getAccount(String account);
 
 
 }

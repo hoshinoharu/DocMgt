@@ -39,6 +39,7 @@ public class UserController extends HoshiController {
 
     @Autowired
     private UserService userService;
+
     /***
      * @description：添加用户
      * @param :
@@ -46,7 +47,7 @@ public class UserController extends HoshiController {
      * @Date:2020.3.21
      *
      */
-    @PostMapping("/addUser")
+    @PostMapping("/add")
     public RespData<String> addUser(User user) {
         return $(respData -> {
             userService.save(user);
@@ -66,8 +67,8 @@ public class UserController extends HoshiController {
      * @author：SQY
      * @Date:2020.3.21
      */
-    @DeleteMapping("/deleteUser")
-    public RespData<Boolean> deleteUser(String id) {
+    @DeleteMapping("/del")
+    public RespData<Boolean> del(String id) {
         return $(booleanRespData -> {
             if (id == null) {
                 booleanRespData.success(false).msg("未发现该ID");
@@ -87,69 +88,50 @@ public class UserController extends HoshiController {
      * @author：SQY
      * @Date:2020.3.21
      */
-    public RespData<Boolean> updateUser(User user) {
+    @PutMapping("/update")
+    public RespData<Boolean> update(User user) {
         return $(booleanRespData -> {
-            QueryWrapper<User> queryWrapper = new QueryWrapper<User>();
-            queryWrapper.eq("id", user.getId());
-            userService.update(user, queryWrapper);
+            if (user.getId() == null) {
+                booleanRespData.success(false).msg("未能获取更新ID");
+            } else {
+                userService.update(user);
+            }
         });
     }
 
-    /***
-     * 根据ID查询用户
+    /**
+     * 根据关键字查询用户名，描述
      * @param key
      * @param pageIndex
      * @param pageSize
      * @return
      */
-    @GetMapping("/selectByID/{pageIndex}/{pageSize}")
-    public RespData<List<User>> selectByID(@RequestParam(required = false, defaultValue = "") String key,
-                                           @PathVariable int pageIndex,
-                                           @PathVariable int pageSize) {
+    @GetMapping("/getKey")
+    public RespData<List<User>> getKey(String key,@PathVariable int pageIndex,@PathVariable int pageSize){
         return $(listRespData -> {
             $page().index(pageIndex).size(pageSize);
-            QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("id", key);
-            List<User> list = userService.list(queryWrapper);
+            List<User> list = userService.getKey(key);
             listRespData.success(true).data(list);
         });
     }
 
-
     /***
      * 根据姓名查询
-     * @param key
+     * @param name
      * @param pageIndex
      * @param pageSize
      * @return
      * @author：SQY
      * @Date:2020.3.21
      */
-    @GetMapping("/list/{pageIndex}/{pageSize}")
-    public RespData<List<User>> list(@RequestParam(required = false, defaultValue = "") String key,
+    @GetMapping("/getName/{pageIndex}/{pageSize}")
+    public RespData<List<User>> getName(@RequestParam(required = false, defaultValue = "") String name,
                                      @PathVariable int pageIndex,
                                      @PathVariable int pageSize) {
         return $(listRespData -> {
             $page().index(pageIndex).size(pageSize);
-            List<User> users = userService.selectByName(key);
+            List<User> users = userService.getName(name);
             listRespData.success(true).data(users);
-        });
-    }
-
-    /***
-     * 根据账号查询
-     * @param pageIndex
-     * @param pageSize
-     * @return
-     * @author：SQY
-     * @Date:2020.3.21
-     */
-    @GetMapping("/selectByAccount/{pageIndex}/{pageSize}")
-    public RespData<List<User>> selectByAccount(@PathVariable Integer pageIndex,@PathVariable int pageSize){
-        return $(listRespData -> {
-            $page().index(pageIndex).size(pageSize);
-            List<User> list = userService.selectByAccount("");
-            listRespData.success(true).data(list);
         });
     }
 }
