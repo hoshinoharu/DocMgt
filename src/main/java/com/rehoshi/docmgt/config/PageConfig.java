@@ -1,7 +1,19 @@
 package com.rehoshi.docmgt.config;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 
 public class PageConfig {
+    public static PageConfig get(HttpServletRequest request) {
+        PageConfig config = (PageConfig) request.getAttribute("$pageConfig#");
+        return config == null ? new PageConfig() : config;
+    }
+
+    public static void init(HttpServletRequest request){
+        request.setAttribute("$pageConfig#", new PageConfig());
+    }
 
     private int pageIndex = -1;
     private int pageSize = -1;
@@ -43,7 +55,7 @@ public class PageConfig {
 
     /**
      * 是否需要分页
-      * @return
+     * @return
      */
     public boolean needPage(){
         return pageIndex >= 0 && pageSize >= 0 ;
@@ -56,4 +68,5 @@ public class PageConfig {
         this.searchCount = false ;
         return  b;
     }
+
 }

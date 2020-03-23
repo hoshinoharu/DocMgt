@@ -10,6 +10,7 @@ import com.rehoshi.stream.HStream;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,9 +25,10 @@ import java.util.Map;
 public abstract class HoshiService<M extends BaseMapper<T>, T> extends ServiceImpl<M, T> {
     @Autowired
     private KieSession kieSession;
-
     @Autowired
-    private PageConfig pageConfig;
+    private HttpServletRequest request ;
+
+    private PageConfig config ;
 
     private T fireOne(T one) {
         if (one != null) {
@@ -83,13 +85,20 @@ public abstract class HoshiService<M extends BaseMapper<T>, T> extends ServiceIm
 
     protected boolean needPage(boolean reset){
         if(reset){
-            return pageConfig.needPageThenReset() ;
+            return getPageConfig().needPageThenReset() ;
         }
-        return pageConfig.needPage() ;
+        return getPageConfig().needPage() ;
     }
 
     protected Page<T> getPage(){
-        return new Page<>(pageConfig.getPageIndex(), pageConfig.getPageSize(), pageConfig.isSearchCount());
+        return new Page<>(getPageConfig().getPageIndex(), getPageConfig().getPageSize(), getPageConfig().isSearchCount());
+    }
+
+    private PageConfig getPageConfig(){
+        if(config == null){
+            config = PageConfig.get(request) ;
+        }
+        return config;
     }
 
 }

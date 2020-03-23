@@ -5,6 +5,8 @@ import org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.web.context.WebApplicationContext;
 
 @Configuration
 public class MybatisConfig  {
@@ -15,11 +17,5 @@ public class MybatisConfig  {
     @Bean
     public PaginationInterceptor paginationInterceptor() {
         return new PaginationInterceptor();
-    }
-
-    @Bean
-    @Scope("request")
-    public PageConfig pageConfig(){
-        return new PageConfig() ;
     }
 }

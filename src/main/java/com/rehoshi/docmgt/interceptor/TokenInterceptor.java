@@ -20,6 +20,9 @@ public class TokenInterceptor implements HandlerInterceptor {
     private UserService userService ;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        if(true){
+         return true ;
+        }
         //获取请求头参数
         String token = request.getHeader("token'");
         if(StringUtils.isEmpty(token)){
@@ -45,7 +48,12 @@ public class TokenInterceptor implements HandlerInterceptor {
         }
         //返回登录失败
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        String json = new ObjectMapper().writeValueAsString(RespData.failed().msg("登录验证过期，请重新登录"));
+        response.setCharacterEncoding("UTF-8");
+
+        String json = new ObjectMapper().writeValueAsString(RespData.failed()
+                .code(RespData.Code.TOKEN_TIME_OUT)
+                .msg("登录验证过期，请重新登录"));
+
         response.getWriter().write(json);
         return false;
     }

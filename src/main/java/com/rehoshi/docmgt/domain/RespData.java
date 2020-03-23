@@ -8,6 +8,7 @@ public class RespData<T> {
     public interface Code{
         int SUCCESS = 200 ;
         int SERVER_ERROR = 500 ;
+        int TOKEN_TIME_OUT = 1000 ;
     }
 
     private Integer code;

@@ -39,10 +39,6 @@ public class UserController extends HoshiController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private PageConfig config;
-
     /***
      * @description：添加用户
      * @param :
@@ -111,7 +107,7 @@ public class UserController extends HoshiController {
                                            @PathVariable int pageIndex,
                                            @PathVariable int pageSize) {
         return $(listRespData -> {
-            config.index(pageIndex).size(pageSize);
+            $page().index(pageIndex).size(pageSize);
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("id", key);
             List<User> list = userService.list(queryWrapper);
@@ -134,7 +130,7 @@ public class UserController extends HoshiController {
                                      @PathVariable int pageIndex,
                                      @PathVariable int pageSize) {
         return $(listRespData -> {
-            config.index(pageIndex).size(pageSize);
+            $page().index(pageIndex).size(pageSize);
             List<User> users = userService.selectByName(key);
             listRespData.success(true).data(users);
         });
@@ -151,7 +147,7 @@ public class UserController extends HoshiController {
     @GetMapping("/selectByAccount/{pageIndex}/{pageSize}")
     public RespData<List<User>> selectByAccount(@PathVariable Integer pageIndex,@PathVariable int pageSize){
         return $(listRespData -> {
-            config.index(pageIndex).size(pageSize);
+            $page().index(pageIndex).size(pageSize);
             List<User> list = userService.selectByAccount("");
             listRespData.success(true).data(list);
         });

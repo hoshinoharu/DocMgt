@@ -1,5 +1,6 @@
 package com.rehoshi.docmgt.config;
 
+import com.rehoshi.docmgt.interceptor.PageInterceptor;
 import com.rehoshi.docmgt.interceptor.TokenInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -15,6 +16,8 @@ public class WebConfig extends WebMvcConfigurationSupport {
         registry.addInterceptor(new TokenInterceptor())
                 .addPathPatterns("/**")//过滤所有请求 排除 登录和注册请求
                 .excludePathPatterns("/user/login", "/user/register");
+        registry.addInterceptor(new PageInterceptor())
+                .addPathPatterns("/**");
 
     }
 }
