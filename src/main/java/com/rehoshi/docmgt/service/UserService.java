@@ -14,7 +14,7 @@ public interface UserService extends IService<User> {
     /***
      * 根据账号查询用户信息
      */
-    List<User> selectByAccount();
+    List<User> selectByAccount(String account);
 
 
 }

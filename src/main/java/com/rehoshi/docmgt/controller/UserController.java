@@ -1,9 +1,6 @@
 package com.rehoshi.docmgt.controller;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.segments.MergeSegments;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.rehoshi.docmgt.config.PageConfig;
 import com.rehoshi.docmgt.domain.RespData;
 import com.rehoshi.docmgt.domain.entities.User;
@@ -11,7 +8,6 @@ import com.rehoshi.docmgt.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /***
@@ -110,7 +106,7 @@ public class UserController extends HoshiController {
      * @param pageSize
      * @return
      */
-    @GetMapping("/selectByID/{pgaeIndex}/{pageSize}")
+    @GetMapping("/selectByID/{pageIndex}/{pageSize}")
     public RespData<List<User>> selectByID(@RequestParam(required = false, defaultValue = "") String key,
                                            @PathVariable int pageIndex,
                                            @PathVariable int pageSize) {
@@ -152,13 +148,12 @@ public class UserController extends HoshiController {
      * @author：SQY
      * @Date:2020.3.21
      */
-    @GetMapping("/selectByAccount/{pageIndex}/{pageSiz}")
+    @GetMapping("/selectByAccount/{pageIndex}/{pageSize}")
     public RespData<List<User>> selectByAccount(@PathVariable Integer pageIndex,@PathVariable int pageSize){
         return $(listRespData -> {
             config.index(pageIndex).size(pageSize);
-            List<User> list = userService.selectByAccount();
+            List<User> list = userService.selectByAccount("");
             listRespData.success(true).data(list);
         });
-
     }
 }

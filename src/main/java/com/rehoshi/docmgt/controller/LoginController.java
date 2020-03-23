@@ -1,68 +1,92 @@
 package com.rehoshi.docmgt.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.rehoshi.docmgt.auth.TokenGenerator;
 import com.rehoshi.docmgt.domain.RespData;
 import com.rehoshi.docmgt.domain.entities.User;
 import com.rehoshi.docmgt.service.UserService;
+import com.rehoshi.stream.HStream;
+import org.apache.tomcat.util.security.MD5Encoder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Objects;
 
 
 @RestController
-@RequestMapping("/login/")
+@RequestMapping("/user")
 /**
  *  功能：登入登出，返回json格式
  *  方法：loginIn(),loginOut()
  *  作者：
  *  日期：2020.3.20
  */
-public class LoginController {
+public class LoginController extends HoshiController {
     @Autowired
     private UserService userService;
 
-
-    /***
-     * 功能：登入，根据用户名，密码登录
-     * 参数：
-     * @Author:
-     * @data:2020.3.20
-     */
-
-
-    /*public RespData<List<User>> loginIn(@RequestParam(required = true,defaultValue = "account") String account, String password){
-        return $(RespData);
-       *//* QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("account",user.getAccount());
-        queryWrapper.eq("password",user.getPassword());
-        u = userService.getOne(queryWrapper);
-        if(u != null){
-            session.setAttribute("user",u);
-        }else if((!u.getAccount().equals(user.getAccount())) && (!u.getPassword().equals(user.getPassword()))){
-            model.addAttribute("error","用户名或密码错误");
-            return "loginIn";
-        }else{
-            model.addAttribute("error","用户名或密码不能为空！");
-            return "loginIn";
-        }
-        return null;*//*
+    @PostMapping("/register")
+    public RespData<User> register(User user) {
+        return $(resp -> {
+            List<User> users = userService.selectByAccount(user.getAccount());
+            if (HStream.count(users) > 0) {
+                resp.success(false).msg("该账号已存在");
+            } else {
+                //插入用户数据
+                userService.save(user);
+                //生成token
+                String token = TokenGenerator.generateToken(user);
+                //设置token
+                user.setToken(token);
+                //更新token
+                userService.updateById(user);
+                //注册成功
+                resp.success(true).data(user).msg("注册成功");
+            }
+        });
     }
-*/
-    /***
-     * 功能：登出
-     *
-     * @param session
-     * @return
-     * @Author:
-     * @Date:2020.3.20
-     */
-   /* public String loginOut(HttpSession session){
-        session.removeAttribute("user");
-        return null;
-    }*/
 
+    /**
+     * 登录成功 返回token 登录凭证
+     *
+     * @return
+     */
+    @PostMapping("/login")
+    public RespData<String> login(User user) {
+        return $(resp -> {
+            List<User> users = userService.selectByAccount(user.getAccount());
+            if (HStream.count(users) != 1) {
+                resp.success(false).msg("用户名或者密码错误");
+            } else {
+                //从数据库查询出来的用户
+                User temp = users.get(0);
+                //md5加密客户端密码
+                String clientPwd = MD5Encoder.encode(user.getPassword().getBytes());
+                //对比加密后的密码是否一致
+                boolean equals = Objects.equals(temp.getPassword(), clientPwd);
+                if (equals) {
+                    //生成token
+                    String token = TokenGenerator.generateToken(temp);
+                    //设置token
+                    temp.setToken(token);
+                    //保存到数据库
+                    userService.updateById(temp);
+                    //返回token
+                    resp.success(true).data(token).msg("登录成功");
+                } else {
+                    resp.success(false).msg("用户名或者密码错误");
+                }
+            }
+        });
+    }
+
+    @DeleteMapping("/logout/{userId}")
+    public RespData<Boolean> logout(@PathVariable String userId) {
+        return $(resp -> {
+            User byId = userService.getById(userId);
+            byId.setToken("");
+            userService.updateById(byId);
+            resp.success(true).data(true).msg("登出成功");
+        });
+    }
 }
