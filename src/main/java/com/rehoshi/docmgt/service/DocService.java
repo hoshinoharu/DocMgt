@@ -18,4 +18,8 @@ public interface DocService extends IService<Doc> {
      * @return
      */
     List<Doc> listBySearch(String key);
+
+    void update(Doc doc);
+
+    List<Doc> listRecommend();
 }

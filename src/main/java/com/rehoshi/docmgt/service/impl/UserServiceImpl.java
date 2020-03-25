@@ -32,7 +32,9 @@ public class UserServiceImpl extends HoshiService<UserDao, User> implements User
     public List<User> getKey(String key) {
         List<User> list;
         QueryWrapper<User> queryWrapper = new QueryWrapper<User>();
-        queryWrapper.select("name", "description").eq("account", key);
+        queryWrapper.select("name", "description")
+                .like("account", "%"+key + "%")
+                .or().like("id","%" + key + "%");
         if (needPage()) {
             list = page(getPage(), queryWrapper).getRecords();
         } else {

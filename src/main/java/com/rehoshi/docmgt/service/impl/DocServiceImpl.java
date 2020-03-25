@@ -12,7 +12,11 @@ import java.util.List;
 
 @Service
 public class DocServiceImpl extends HoshiService<DocDao, Doc> implements DocService {
-
+    /**
+     * 根据分类查询
+     * @param category
+     * @return
+     */
     @Override
     public List<Doc> listByCategory(String category) {
         List<Doc> docList ;
@@ -22,6 +26,11 @@ public class DocServiceImpl extends HoshiService<DocDao, Doc> implements DocServ
         return docList;
     }
 
+    /**
+     * 根据关键字查询
+     * @param key
+     * @return
+     */
     @Override
     public List<Doc> listBySearch(String key) {
         List<Doc> docList ;
@@ -31,5 +40,35 @@ public class DocServiceImpl extends HoshiService<DocDao, Doc> implements DocServ
                 .or().like("tag", "%"+key+"%");
         docList = page(getPage(), wrapper).getRecords();
         return docList;
+    }
+
+    /**
+     * 更新
+     * @param doc
+     * @author：SQY
+     * @date:2020.3.25
+     */
+    @Override
+    public void update(Doc doc) {
+        QueryWrapper<Doc> queryWrapper = new QueryWrapper<Doc>();
+        queryWrapper.eq("id",doc.getId());
+        getBaseMapper().update(doc,queryWrapper);
+
+    }
+
+    /**
+     * 根据日期倒排序，推荐最近上传的十条
+     * @return
+     * @author：SQY
+     * @date:2020.3.25
+     *
+     */
+    @Override
+    public List<Doc> listRecommend() {
+        List<Doc> listDoc;
+        QueryWrapper<Doc> queryWrapper = new QueryWrapper<Doc>();
+        queryWrapper.orderByDesc("createTime");
+        listDoc = page(getPage(),queryWrapper).getRecords();
+        return listDoc;
     }
 }
