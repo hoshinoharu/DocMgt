@@ -91,7 +91,7 @@ public class DocController extends HoshiController {
     public RespData<Boolean> list(String key, @PathVariable int pageIndex, @PathVariable int pageSize) {
         return $(resp -> {
             $page().index(pageIndex).size(pageSize);
-            List<Doc> docList = docService.listBySearch("");
+            List<Doc> docList = docService.listBySearch(key);
 
         });
     }
