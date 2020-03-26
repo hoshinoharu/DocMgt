@@ -50,8 +50,8 @@ public class DocController extends HoshiController {
      * @author:SQY
      * @date:2020.3.25
      */
-    @DeleteMapping("/del")
-    public RespData<Boolean> del(String id) {
+    @DeleteMapping("/del/{id}")
+    public RespData<Boolean> del(@PathVariable String id) {
         return $(booleanRespData -> {
             if (id == null) {
                 RespData.succeed(false).msg("ID为空删除失败");
@@ -69,13 +69,13 @@ public class DocController extends HoshiController {
      * @return
      * @author:SQY date:2020.3.25
      */
-    @PutMapping("/uadate")
+    @PutMapping("/update")
     public RespData<Boolean> update(Doc doc) {
         return $(booleanRespData -> {
             if (doc.getId() == null) {
                 booleanRespData.success(false).msg("未能获取更新ID");
             } else {
-                docService.update(doc);
+                docService.updateById(doc);
             }
         });
     }
@@ -87,12 +87,12 @@ public class DocController extends HoshiController {
      * @author:SQY
      * @date:2020.3.25
      */
-    @GetMapping("/list")
-    public RespData<Boolean> list(String key, @PathVariable int pageIndex, @PathVariable int pageSize) {
+    @GetMapping("/list/{pageIndex}/{pageSize}")
+    public RespData<List<Doc>> list(String key, @PathVariable int pageIndex, @PathVariable int pageSize) {
         return $(resp -> {
             $page().index(pageIndex).size(pageSize);
             List<Doc> docList = docService.listBySearch(key);
-
+            resp.success(true).data(docList) ;
         });
     }
 
@@ -104,12 +104,19 @@ public class DocController extends HoshiController {
      * @author:SQY
      * @date:2020.3.25
      */
-    @GetMapping("/listRec")
-    public RespData<List<Doc>> listRecomment(@PathVariable int pageIndex, @PathVariable int pageSize) {
+    @GetMapping("/list/recommend/{pageIndex}/{pageSize}")
+    public RespData<List<Doc>> listRecommend(@PathVariable int pageIndex, @PathVariable int pageSize) {
         return $(listRespData -> {
             $page().index(pageIndex).size(pageSize);
             List<Doc> docList = docService.listRecommend();
+            listRespData.success(true).data(docList)  ;
         });
+    }
+
+    public RespData<List<Doc>> listCategory(){
+        return $(resp->{
+
+        }) ;
     }
 
 }

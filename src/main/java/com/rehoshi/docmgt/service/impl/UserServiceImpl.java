@@ -11,45 +11,12 @@ import java.util.List;
 @Service
 public class UserServiceImpl extends HoshiService<UserDao, User> implements UserService {
     /**
-     * 更新用户
-     *
-     * @param user
-     */
-    @Override
-    public void update(User user) {
-        QueryWrapper<User> queryWrapper = new QueryWrapper<User>();
-        queryWrapper.eq("id", user.getId());
-        getBaseMapper().update(user, queryWrapper);
-    }
-
-    /**
-     * 根据关键字查询用户名，描述字段
-     *
-     * @param key
-     * @return list(需要分页则分页 ， 不需要分页返回list)
-     */
-    @Override
-    public List<User> getKey(String key) {
-        List<User> list;
-        QueryWrapper<User> queryWrapper = new QueryWrapper<User>();
-        queryWrapper.select("name", "description")
-                .like("account", "%"+key + "%")
-                .or().like("id","%" + key + "%");
-        if (needPage()) {
-            list = page(getPage(), queryWrapper).getRecords();
-        } else {
-            list = list(queryWrapper);
-        }
-        return list;
-    }
-
-    /**
      * 根据账号查询用户所有信息
      * @param account
      * @return
      */
     @Override
-    public List<User> getAccount(String account) {
+    public List<User> getByAccount(String account) {
         List<User> list;
         QueryWrapper<User> queryWrapper = new QueryWrapper<User>();
         queryWrapper.eq("account",account);
@@ -63,10 +30,12 @@ public class UserServiceImpl extends HoshiService<UserDao, User> implements User
      * @return lsit
      */
     @Override
-    public List<User> getName(String key) {
+    public List<User> listBySearch(String key) {
+        key = "%"+key+"%" ;
         List<User> userList;
         QueryWrapper<User> wrapper = new QueryWrapper<>();
-        wrapper.eq("name", key);
+        wrapper.like("name", key)
+        .or().like("account", key);
         if (needPage()) {
             userList = page(getPage(), wrapper).getRecords();
         } else {

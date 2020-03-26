@@ -1,7 +1,5 @@
 package com.rehoshi.docmgt.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.rehoshi.docmgt.config.PageConfig;
 import com.rehoshi.docmgt.domain.RespData;
 import com.rehoshi.docmgt.domain.entities.User;
 import com.rehoshi.docmgt.service.UserService;
@@ -48,7 +46,7 @@ public class UserController extends HoshiController {
      *
      */
     @PostMapping("/add")
-    public RespData<String> addUser(User user) {
+    public RespData<String> add(User user) {
         return $(respData -> {
             userService.save(user);
             String id = user.getId();
@@ -94,43 +92,26 @@ public class UserController extends HoshiController {
             if (user.getId() == null) {
                 booleanRespData.success(false).msg("未能获取更新ID");
             } else {
-                userService.update(user);
+                userService.updateById(user);
             }
         });
     }
 
-    /**
-     * 根据关键字查询用户名，描述
-     * @param key
-     * @param pageIndex
-     * @param pageSize
-     * @return
-     */
-    @GetMapping("/getKey")
-    public RespData<List<User>> getKey(String key,@PathVariable int pageIndex,@PathVariable int pageSize){
-        return $(listRespData -> {
-            $page().index(pageIndex).size(pageSize);
-            List<User> list = userService.getKey(key);
-            listRespData.success(true).data(list);
-        });
-    }
-
     /***
-     * 根据姓名查询
-     * @param name
+     * 根据关键字对比姓名账号进行查询
      * @param pageIndex
      * @param pageSize
      * @return
      * @author：SQY
      * @Date:2020.3.21
      */
-    @GetMapping("/getName/{pageIndex}/{pageSize}")
-    public RespData<List<User>> getName(@RequestParam(required = false, defaultValue = "") String name,
+    @GetMapping("/list/{pageIndex}/{pageSize}")
+    public RespData<List<User>> getName(@RequestParam(name = "search",required = false, defaultValue = "") String search,
                                      @PathVariable int pageIndex,
                                      @PathVariable int pageSize) {
         return $(listRespData -> {
             $page().index(pageIndex).size(pageSize);
-            List<User> users = userService.getName(name);
+            List<User> users = userService.listBySearch(search);
             listRespData.success(true).data(users);
         });
     }

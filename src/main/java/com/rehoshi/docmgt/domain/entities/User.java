@@ -26,14 +26,6 @@ public class User {
      */
     private String account ;
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     /**
      * 用户密码
      */
@@ -110,4 +102,13 @@ public class User {
     public void setToken(String token) {
         this.token = token;
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
 }

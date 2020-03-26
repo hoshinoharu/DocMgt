@@ -43,20 +43,6 @@ public class DocServiceImpl extends HoshiService<DocDao, Doc> implements DocServ
     }
 
     /**
-     * 更新
-     * @param doc
-     * @author：SQY
-     * @date:2020.3.25
-     */
-    @Override
-    public void update(Doc doc) {
-        QueryWrapper<Doc> queryWrapper = new QueryWrapper<Doc>();
-        queryWrapper.eq("id",doc.getId());
-        getBaseMapper().update(doc,queryWrapper);
-
-    }
-
-    /**
      * 根据日期倒排序，推荐最近上传的十条
      * @return
      * @author：SQY
@@ -66,7 +52,7 @@ public class DocServiceImpl extends HoshiService<DocDao, Doc> implements DocServ
     @Override
     public List<Doc> listRecommend() {
         List<Doc> listDoc;
-        QueryWrapper<Doc> queryWrapper = new QueryWrapper<Doc>();
+        QueryWrapper<Doc> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderByDesc("createTime");
         listDoc = page(getPage(),queryWrapper).getRecords();
         return listDoc;
