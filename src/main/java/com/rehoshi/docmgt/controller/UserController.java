@@ -98,7 +98,7 @@ public class UserController extends HoshiController {
     }
 
     /***
-     * 根据关键字对比姓名账号进行查询
+     * 根据关键字对姓名账号进行查询
      * @param pageIndex
      * @param pageSize
      * @return

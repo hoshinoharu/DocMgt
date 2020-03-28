@@ -55,6 +55,19 @@ public class Doc {
      */
     private Date createTime;
 
+    /**
+     * 文档 Url
+     *
+     */
+    private  String docUrl;
+    public String getDocUrl() {
+        return docUrl;
+    }
+
+    public void setDocUrl(String docUrl) {
+        this.docUrl = docUrl;
+    }
+
 
     public String getId() {
         return id;

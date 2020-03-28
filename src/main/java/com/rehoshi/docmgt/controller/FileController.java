@@ -4,13 +4,15 @@ package com.rehoshi.docmgt.controller;
 
 import com.rehoshi.docmgt.domain.RespData;
 import com.rehoshi.docmgt.domain.entities.Doc;
+import org.apache.poi.hwpf.extractor.WordExtractor;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 
 @RestController
@@ -58,9 +60,43 @@ public class FileController extends HoshiController{
         });
     }
     @RequestMapping("/analysis")
-    public RespData<Doc> analysis(){
+    public RespData<Doc> analysis(String path){
         return $(docRespData -> {
-
+            String buff = null;
+            InputStream is = null;
+            if(path.endsWith(".doc")){
+                try {
+                    is = new FileInputStream(new File(path));
+                    WordExtractor extractor = new WordExtractor(is);
+                    buff = extractor.getText();
+                    RespData.succeed(true).msg("读取doc成功");
+                    extractor.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }else if(path.endsWith(".docx")){
+                try {
+                    is = new FileInputStream(new File(path));
+                    XWPFDocument Xdoc = new XWPFDocument(is);
+                    XWPFWordExtractor XWE = new XWPFWordExtractor(Xdoc);
+                    buff = XWE.getText();
+                    RespData.succeed(true).msg("读取docx文档成功");
+                    XWE.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }else {
+                RespData.succeed(false).msg("读取文档非doc/docx格式");
+            }
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
     }
 }
