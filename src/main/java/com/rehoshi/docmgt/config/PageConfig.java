@@ -1,14 +1,14 @@
 package com.rehoshi.docmgt.config;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
-
 import javax.servlet.http.HttpServletRequest;
 
 public class PageConfig {
     public static PageConfig get(HttpServletRequest request) {
         PageConfig config = (PageConfig) request.getAttribute("$pageConfig#");
-        return config == null ? new PageConfig() : config;
+        if(config == null){
+            config = new PageConfig() ;
+            request.setAttribute("$pageConfig#", config) ;
+        }
+        return config ;
     }
 
     public static void init(HttpServletRequest request){

@@ -1,18 +1,23 @@
 package com.rehoshi.docmgt.controller;
 
 
-
 import com.rehoshi.docmgt.domain.RespData;
-import com.rehoshi.docmgt.domain.entities.Doc;
+import com.rehoshi.docmgt.domain.entities.FileWrapper;
+import org.apache.commons.io.FileUtils;
 import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLDecoder;
 
 
 @RestController
@@ -33,16 +38,17 @@ public class FileController extends HoshiController{
      * @dataTime:2020.03.28
      */
     @PostMapping("/load")
-    public RespData<Boolean> load(MultipartFile file){
-        return $(booleanRespData -> {
+    public RespData<FileWrapper> load(@RequestParam("file") MultipartFile file){
+        return $(resp -> {
             try {
                 if (file.isEmpty()){
                     RespData.succeed(false).msg("file is empty");
                 }
                 //获取文件名
                 String fileName = file.getOriginalFilename();
+                fileName = URLDecoder.decode(fileName, "UTF-8") ;
                 //存储路径
-                String filePath = "src/main";
+                String filePath = "D:\\docTemp\\";
                 String path = filePath + fileName;
                 File newFile = new File(path);
                 //判断是否存在根目录
@@ -51,52 +57,49 @@ public class FileController extends HoshiController{
                 }
                 //上传
                 file.transferTo(newFile);
-                RespData.succeed(true).msg("文件上传成功！");
+                FileWrapper wrapper = new FileWrapper() ;
+                wrapper.setContent(analysis(path));
+                wrapper.setPathAtServer(path);
+                resp.success(true).data(wrapper).msg("文件上传成功！");
             } catch (IOException e) {
                 e.printStackTrace();
-                RespData.succeed(false).msg("上传失败");
+                resp.success(false).msg("上传失败");
             }
 
         });
     }
-    @RequestMapping("/analysis")
-    public RespData<Doc> analysis(String path){
-        return $(docRespData -> {
-            String buff = null;
-            InputStream is = null;
-            if(path.endsWith(".doc")){
-                try {
-                    is = new FileInputStream(new File(path));
-                    WordExtractor extractor = new WordExtractor(is);
-                    buff = extractor.getText();
-                    RespData.succeed(true).msg("读取doc成功");
-                    extractor.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }else if(path.endsWith(".docx")){
-                try {
-                    is = new FileInputStream(new File(path));
-                    XWPFDocument Xdoc = new XWPFDocument(is);
-                    XWPFWordExtractor XWE = new XWPFWordExtractor(Xdoc);
-                    buff = XWE.getText();
-                    RespData.succeed(true).msg("读取docx文档成功");
-                    XWE.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }else {
-                RespData.succeed(false).msg("读取文档非doc/docx格式");
+    public static String analysis(String path){
+        String buff = null;
+        InputStream is = null;
+        File file = new File(path);
+        try {
+
+            if (path.endsWith(".doc")) {
+                is = new FileInputStream(file);
+                WordExtractor extractor = new WordExtractor(is);
+                buff = extractor.getText();
+                extractor.close();
+                return buff ;
+            } else if (path.endsWith(".docx")) {
+                is = new FileInputStream(file);
+                XWPFDocument Xdoc = new XWPFDocument(is);
+                XWPFWordExtractor XWE = new XWPFWordExtractor(Xdoc);
+                buff = XWE.getText();
+                XWE.close();
+                return buff ;
             }
+        }catch (Exception e){
+        }finally {
             try {
                 is.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
             }
-        });
+        }
+        try {
+            buff = FileUtils.readFileToString(file) ;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return buff ;
     }
 }

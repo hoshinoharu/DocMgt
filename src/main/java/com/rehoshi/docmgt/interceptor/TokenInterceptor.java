@@ -8,6 +8,7 @@ import com.rehoshi.docmgt.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,16 +16,14 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Calendar;
 import java.util.Objects;
 
+@Component
 public class TokenInterceptor implements HandlerInterceptor {
     @Autowired
     private UserService userService ;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if(true){
-         return true ;
-        }
         //获取请求头参数
-        String token = request.getHeader("token'");
+        String token = request.getHeader("token");
         if(StringUtils.isEmpty(token)){
             //如果请求头没有 获取请求体参数
             token = request.getParameter("token") ;

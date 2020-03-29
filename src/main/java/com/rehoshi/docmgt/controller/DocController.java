@@ -1,14 +1,10 @@
 package com.rehoshi.docmgt.controller;
 
-import com.baomidou.mybatisplus.extension.api.R;
-import com.rehoshi.docmgt.config.PageConfig;
 import com.rehoshi.docmgt.domain.RespData;
 import com.rehoshi.docmgt.domain.entities.Doc;
 import com.rehoshi.docmgt.domain.entities.User;
 import com.rehoshi.docmgt.service.DocService;
 import com.rehoshi.docmgt.service.UserService;
-import com.rehoshi.docmgt.service.impl.UserServiceImpl;
-import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,8 +16,8 @@ public class DocController extends HoshiController {
 
     @Autowired
     private DocService docService;
-
-
+    @Autowired
+    private UserService userService ;
     /**
      * 加载文档
      *
@@ -30,14 +26,15 @@ public class DocController extends HoshiController {
      * @author:SQY
      * @date:2020.3.25
      */
-    @PostMapping("/load")
-    public RespData<Boolean> load(Doc doc) {
-        return $(booleanRespData -> {
+    @PostMapping("/add")
+    public RespData<Boolean> add(@RequestBody Doc doc) {
+        return $(resp -> {
+            doc.setContent(FileController.analysis(doc.getDocUrl()));
             docService.save(doc);
             if (doc.getId() == null) {
-                RespData.succeed(false).msg("加载失败，");
+                resp.success(false).data(false).msg("加载失败，");
             } else {
-                RespData.succeed(true).msg("加载成功");
+                resp.success(true).data(true).msg("加载成功");
             }
         });
     }
@@ -52,12 +49,12 @@ public class DocController extends HoshiController {
      */
     @DeleteMapping("/del/{id}")
     public RespData<Boolean> del(@PathVariable String id) {
-        return $(booleanRespData -> {
+        return $(resp -> {
             if (id == null) {
-                RespData.succeed(false).msg("ID为空删除失败");
+                resp.success(false).data(true).msg("ID为空删除失败");
             } else {
                 docService.removeById(id);
-                RespData.succeed(true).msg("删除成功");
+                resp.success(true).data(true).msg("删除成功");
             }
         });
     }
@@ -70,12 +67,14 @@ public class DocController extends HoshiController {
      * @author:SQY date:2020.3.25
      */
     @PutMapping("/update")
-    public RespData<Boolean> update(Doc doc) {
+    public RespData<Boolean> update(@RequestBody Doc doc) {
         return $(booleanRespData -> {
             if (doc.getId() == null) {
                 booleanRespData.success(false).msg("未能获取更新ID");
             } else {
+                doc.setContent(FileController.analysis(doc.getDocUrl()));
                 docService.updateById(doc);
+                booleanRespData.success(true).data(true).msg("修改成功") ;
             }
         });
     }
@@ -88,11 +87,11 @@ public class DocController extends HoshiController {
      * @date:2020.3.25
      */
     @GetMapping("/list/{pageIndex}/{pageSize}")
-    public RespData<List<Doc>> list(String key, @PathVariable int pageIndex, @PathVariable int pageSize) {
+    public RespData<List<Doc>> list(@RequestParam("key") String key, @PathVariable int pageIndex, @PathVariable int pageSize) {
         return $(resp -> {
             $page().index(pageIndex).size(pageSize);
             List<Doc> docList = docService.listBySearch(key);
-            resp.success(true).data(docList) ;
+            resp.success(true).data(attachUser(docList)) ;
         });
     }
 
@@ -109,7 +108,7 @@ public class DocController extends HoshiController {
         return $(listRespData -> {
             $page().index(pageIndex).size(pageSize);
             List<Doc> docList = docService.listRecommend();
-            listRespData.success(true).data(docList)  ;
+            listRespData.success(true).data(attachUser(docList))  ;
         });
     }
 
@@ -118,5 +117,22 @@ public class DocController extends HoshiController {
 
         }) ;
     }
+
+
+    private Doc attachUser(Doc doc){
+        if(doc.getCreatorId() != null){
+            User byId = userService.getById(doc.getCreatorId());
+            doc.setCreator(byId);
+        }
+        return doc ;
+    }
+
+    private List<Doc> attachUser(List<Doc> docList){
+        if(docList != null){
+            docList.forEach(this::attachUser);
+        }
+        return docList ;
+    }
+
 
 }

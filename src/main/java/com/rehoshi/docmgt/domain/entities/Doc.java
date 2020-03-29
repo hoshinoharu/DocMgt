@@ -1,8 +1,13 @@
 package com.rehoshi.docmgt.domain.entities;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.rehoshi.docmgt.json.SpDateDeSerializer;
+import com.rehoshi.docmgt.json.SpDateSerializer;
 
-import java.security.Policy;
 import java.util.Date;
 
 public class Doc {
@@ -24,6 +29,7 @@ public class Doc {
     /**
      * 文档id
      */
+    @TableId(type = IdType.ASSIGN_UUID)
     private String id ;
     /**
      * 标题
@@ -53,6 +59,8 @@ public class Doc {
     /**
      * 创建时间
      */
+    @JsonDeserialize(using = SpDateDeSerializer.class)
+    @JsonSerialize(using = SpDateSerializer.class)
     private Date createTime;
 
     /**
@@ -60,6 +68,13 @@ public class Doc {
      *
      */
     private  String docUrl;
+
+    /**
+     * 文件的原本路径
+     */
+    private String originPath ;
+
+
     public String getDocUrl() {
         return docUrl;
     }
@@ -131,5 +146,13 @@ public class Doc {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public String getOriginPath() {
+        return originPath;
+    }
+
+    public void setOriginPath(String originPath) {
+        this.originPath = originPath;
     }
 }

@@ -1,5 +1,8 @@
 package com.rehoshi.docmgt.domain.entities;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.util.Date;
 
 public class User {
@@ -15,6 +18,7 @@ public class User {
     /**
      * 唯一标识
      */
+    @TableId(type = IdType.ASSIGN_UUID)
     private String id ;
     /**
      * 用户名称

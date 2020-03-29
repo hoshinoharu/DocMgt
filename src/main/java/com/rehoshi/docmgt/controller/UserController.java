@@ -74,8 +74,6 @@ public class UserController extends HoshiController {
                 userService.removeById(id);
                 booleanRespData.success(true).msg("已删除");
             }
-
-
         });
     }
 
@@ -87,12 +85,16 @@ public class UserController extends HoshiController {
      * @Date:2020.3.21
      */
     @PutMapping("/update")
-    public RespData<Boolean> update(User user) {
+    public RespData<Boolean> update(@RequestBody User user) {
         return $(booleanRespData -> {
             if (user.getId() == null) {
                 booleanRespData.success(false).msg("未能获取更新ID");
             } else {
-                userService.updateById(user);
+                User byId = userService.getById(user.getId());
+                byId.setName(user.getName());
+                byId.setDescription(user.getDescription());
+                userService.updateById(byId);
+                booleanRespData.success(true).data(true).msg("修改成功") ;
             }
         });
     }

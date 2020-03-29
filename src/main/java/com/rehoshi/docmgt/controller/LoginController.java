@@ -5,8 +5,8 @@ import com.rehoshi.docmgt.domain.RespData;
 import com.rehoshi.docmgt.domain.entities.User;
 import com.rehoshi.docmgt.service.UserService;
 import com.rehoshi.stream.HStream;
-import org.apache.tomcat.util.security.MD5Encoder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,12 +26,13 @@ public class LoginController extends HoshiController {
     private UserService userService;
 
     @PostMapping("/register")
-    public RespData<User> register(User user) {
+    public RespData<User> register(@RequestBody User user) {
         return $(resp -> {
             List<User> users = userService.getByAccount(user.getAccount());
             if (HStream.count(users) > 0) {
                 resp.success(false).msg("该账号已存在");
             } else {
+                user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes()));
                 //插入用户数据
                 userService.save(user);
                 //生成token
@@ -52,7 +53,7 @@ public class LoginController extends HoshiController {
      * @return
      */
     @PostMapping("/login")
-    public RespData<String> login(User user) {
+    public RespData<User> login(@RequestBody User user) {
         return $(resp -> {
             List<User> users = userService.getByAccount(user.getAccount());
             if (HStream.count(users) != 1) {
@@ -61,7 +62,7 @@ public class LoginController extends HoshiController {
                 //从数据库查询出来的用户
                 User temp = users.get(0);
                 //md5加密客户端密码
-                String clientPwd = MD5Encoder.encode(user.getPassword().getBytes());
+                String clientPwd = DigestUtils.md5DigestAsHex(user.getPassword().getBytes()) ;
                 //对比加密后的密码是否一致
                 boolean equals = Objects.equals(temp.getPassword(), clientPwd);
                 if (equals) {
@@ -71,8 +72,9 @@ public class LoginController extends HoshiController {
                     temp.setToken(token);
                     //保存到数据库
                     userService.updateById(temp);
+                    temp.setPassword(null);
                     //返回token
-                    resp.success(true).data(token).msg("登录成功");
+                    resp.success(true).data(temp).msg("登录成功");
                 } else {
                     resp.success(false).msg("用户名或者密码错误");
                 }
