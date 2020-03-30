@@ -40,6 +40,7 @@ public class TokenInterceptor implements HandlerInterceptor {
                 User byId = userService.getById(userId);
                 //比对token是否一致
                 if(byId != null && Objects.equals(byId.getToken(), token)){
+                    request.setAttribute("curUser", byId);
                     //放行继续业务
                     return true ;
                 }

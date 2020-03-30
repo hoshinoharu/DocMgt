@@ -20,6 +20,7 @@ public class User {
      */
     @TableId(type = IdType.ASSIGN_UUID)
     private String id ;
+
     /**
      * 用户名称
      */

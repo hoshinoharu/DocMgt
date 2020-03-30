@@ -43,9 +43,11 @@ public class DocServiceImpl extends HoshiService<DocDao, Doc> implements DocServ
     public List<Doc> listBySearch(String key) {
         List<Doc> docList ;
         QueryWrapper<Doc> wrapper = new QueryWrapper<>() ;
+        //查询内容 标题 标签，只要有一个符合即返回
         wrapper.like("content", key)
                 .or().like("title", key)
                 .or().like("tag", key);
+        //如果关键字是分类关键字，则匹配分类字段
         if(category.containsKey(key)){
             wrapper.or().eq("category", category.get(key));
         }
@@ -63,6 +65,7 @@ public class DocServiceImpl extends HoshiService<DocDao, Doc> implements DocServ
     @Override
     public List<Doc> listRecommend() {
         List<Doc> listDoc;
+        //按创建时间倒序返回列表
         QueryWrapper<Doc> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderByDesc("create_time");
         listDoc = page(getPage(),queryWrapper).getRecords();

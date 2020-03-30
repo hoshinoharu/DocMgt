@@ -95,6 +95,7 @@ public class FileController extends HoshiController{
             } catch (Exception e) {
             }
         }
+        //不是doc 或者docx的文件 直接读取内容
         try {
             buff = FileUtils.readFileToString(file) ;
         } catch (IOException e) {

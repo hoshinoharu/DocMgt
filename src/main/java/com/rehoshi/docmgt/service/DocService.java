@@ -1,6 +1,5 @@
 package com.rehoshi.docmgt.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.rehoshi.docmgt.domain.entities.Doc;
 
@@ -19,5 +18,9 @@ public interface DocService extends IService<Doc> {
      */
     List<Doc> listBySearch(String key);
 
+    /**
+     * 获取推荐列表
+     * @return
+     */
     List<Doc> listRecommend();
 }

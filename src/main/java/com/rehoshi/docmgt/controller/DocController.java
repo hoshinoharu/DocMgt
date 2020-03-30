@@ -3,11 +3,14 @@ package com.rehoshi.docmgt.controller;
 import com.rehoshi.docmgt.domain.RespData;
 import com.rehoshi.docmgt.domain.entities.Doc;
 import com.rehoshi.docmgt.domain.entities.User;
+import com.rehoshi.docmgt.domain.entities.UserLog;
 import com.rehoshi.docmgt.service.DocService;
+import com.rehoshi.docmgt.service.UserLogService;
 import com.rehoshi.docmgt.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -18,6 +21,8 @@ public class DocController extends HoshiController {
     private DocService docService;
     @Autowired
     private UserService userService ;
+    @Autowired
+    private UserLogService userLogService ;
     /**
      * 加载文档
      *
@@ -87,8 +92,16 @@ public class DocController extends HoshiController {
      * @date:2020.3.25
      */
     @GetMapping("/list/{pageIndex}/{pageSize}")
-    public RespData<List<Doc>> list(@RequestParam("key") String key, @PathVariable int pageIndex, @PathVariable int pageSize) {
+    public RespData<List<Doc>> list(@RequestParam("key") String key, @PathVariable int pageIndex, @PathVariable int pageSize,
+                                    @RequestAttribute("curUser") User user) {
         return $(resp -> {
+            if(pageIndex == 1){
+                UserLog userLog = new UserLog();
+                userLog.setSearchTime(new Date());
+                userLog.setUserId(user.getId());
+                userLog.setSearchContent(key);
+                userLogService.save(userLog) ;
+            }
             $page().index(pageIndex).size(pageSize);
             List<Doc> docList = docService.listBySearch(key);
             resp.success(true).data(attachUser(docList)) ;
